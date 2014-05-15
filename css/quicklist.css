@@ -1,0 +1,29 @@
+.quicklist {
+}
+.quicklist_sidebar {
+  width: 10em;
+  position: absolute;
+  padding: 0;
+  z-index: 10;
+}
+.quicklist_sidebar .ui_list {
+}
+.ui_panel.quicklist_content {
+  display: block;
+  margin-left: 10em;
+  padding: 0 .2em;
+}
+.ui_panel.quicklist_content .ui_list {
+}
+@media all and (max-width: 480px) {
+  .ui_panel.quicklist_content {
+    margin-left: 0;
+  }
+  .ui_panel.quicklist_content .ui_list {
+    font-size: 2em;
+  }
+  .ui_panel.quicklist_sidebar {
+    position: relative; 
+    width: 100%;
+  }
+}
