@@ -20,7 +20,7 @@
     margin-left: 0;
   }
   .ui_panel.quicklist_content .ui_list {
-    font-size: 2em;
+    /* font-size: 2em; */
   }
   .ui_panel.quicklist_sidebar {
     position: relative; 
