@@ -1,4 +1,6 @@
-elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.panel"], function() {
+elation.require(["elation.collection", "ui.list", "ui.checklist", "ui.input", "ui.label", "ui.panel"], function() {
+  elation.requireCSS('quicklist.quicklist');
+
   elation.component.add("quicklist.main", function() {
     this.init = function() {
       this.initData();
@@ -58,6 +60,7 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
           label: "List Items",
           hidden: true,
           containertag: 'h2',
+          classname: 'quicklist_listitemlabel',
           append: this.panel_content
         });
       this.listiteminput = elation.ui.input({ 
@@ -65,9 +68,10 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
           hidden: true,
           append: this.panel_content
         });
-      this.listitemview = elation.ui.list({
-          attrs: { label: "itemname" },
+      this.listitemview = elation.ui.checklist({
+          attrs: { label: "itemname", checked: "done" },
           hidden: true,
+          classname: 'quicklist_list_items',
           append: this.panel_content
         });
     }
@@ -88,7 +92,10 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
       if (!this.listitemcollections[listname]) {
         this.listitemcollections[listname] = elation.collection.localindexed({
           index: "itemname",
-          storagekey: "quicklist.lists." + listname
+          storagekey: "quicklist.lists." + listname,
+          events: {
+            'collection_load': elation.bind(this, function() { this.listitemview.sort(this.sortitemlist);  })
+          }
         });
       }
       return this.listitemcollections[listname];
@@ -101,11 +108,13 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
       var list = this.listcollection.get(listname)
       if (list) {
         this.activelist = list;
+console.log('set list', listname, list);
         this.listitemview.setItemCollection(this.getListItemCollection(listname));
 
         this.listitemlabel.setlabel(list.listname);
         this.listitemlabel.show();
         this.listitemview.show();
+        //this.listitemview.sort(this.sortitemlist);
         this.listiteminput.show();
         this.listiteminput.clear(true);
       }
@@ -116,7 +125,7 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
       var newvalue = this.listinput.value;
       if (newvalue != "") {
         this.listinput.clear();
-        var newlist = new elation.quicklist.list(newvalue);
+        var newlist = new elation.quicklist.list(newvalue, false);
         this.listcollection.add(newlist, 0);
         this.setActiveList(newvalue);
       }
@@ -125,17 +134,33 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
       var newvalue = this.listiteminput.value;
       if (newvalue != "") {
         var collection = this.getListItemCollection(this.activelist.listname);
+console.log('newthing', newvalue);
         collection.add(new elation.quicklist.listitem(newvalue), 0);
       }
       this.listiteminput.clear(true);
+      //this.listitemview.sort(this.sortitemlist);
     }
     this.handleListSelect = function(ev) {
       this.setActiveList(ev.data.listname);
     }
     this.handleListItemSelect = function(ev) {
       var collection = this.getListItemCollection(this.activelist.listname);
-      collection.remove(ev.data);
-      //console.log(ev.data, ev);
+      //collection.remove(ev.data);
+      console.log(ev.data, ev.target);
+      ev.data.done = ev.target.checked;
+      collection.save();
+
+      this.listitemview.sort(this.sortitemlist);
+    }
+    this.sortitemlist = function(a, b) {
+      // Push finished item to the bottom
+      if (a.value.done && !b.value.done) {
+        return 1; 
+      } else if (b.value.done && !a.value.done) {
+        return -1;
+      } 
+      // Then sort alphabetically
+      return a.value.itemname.localeCompare(b.value.itemname);
     }
   });
 
@@ -144,5 +169,6 @@ elation.require(["elation.collection", "ui.list", "ui.input", "ui.label", "ui.pa
   });
   elation.extend("quicklist.listitem", function(name) {
     this.itemname = name;
+    this.done = false;
   });
 });

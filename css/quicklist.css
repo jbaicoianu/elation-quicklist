@@ -8,6 +8,9 @@
 }
 .quicklist_sidebar .ui_list {
 }
+.quicklist .ui_input input {
+  width: 100%;
+}
 .ui_panel.quicklist_content {
   display: block;
   margin-left: 10em;
@@ -15,12 +18,31 @@
 }
 .ui_panel.quicklist_content .ui_list {
 }
+.quicklist_list_items.ui_list>.ui_list_item {
+  padding: 0;
+}
+.quicklist_list_items .ui_toggle label {
+  padding: .2em .5em;
+}
+.quicklist_list_items .ui_toggle input[type='checkbox'] {
+  display: none;
+}
+.quicklist_list_items .ui_toggle.state_toggled {
+  text-decoration: line-through;
+  color: #777;
+}
 @media all and (max-width: 480px) {
+  body {
+    font-size: 1.4em;
+  }
+  h2 {
+    font-size: 1em;
+  }
+  .quicklist_listitemlabel {
+    display: none;
+  }
   .ui_panel.quicklist_content {
     margin-left: 0;
-  }
-  .ui_panel.quicklist_content .ui_list {
-    /* font-size: 2em; */
   }
   .ui_panel.quicklist_sidebar {
     position: relative; 
